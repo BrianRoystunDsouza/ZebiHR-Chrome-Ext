@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "ZebiHR Work Hours Calculator",
+  "version": "1.0",
+  "description": "Calculates total working hours on ZebiHR.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "cookies",
+    "tabs",
+    "webRequest",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "https://app.zebihr.com/*", 
+    "https://api.zebihr.com/*"
+  ],
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": "vite.svg"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://app.zebihr.com/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  }
+}
