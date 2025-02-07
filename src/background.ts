@@ -33,7 +33,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 
-
 chrome.action.onClicked.addListener((tab) => {
   if (tab.id === undefined) return;
   chrome.scripting.executeScript({
