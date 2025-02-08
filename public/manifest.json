@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "ZebiHR Work Hours Calculator",
+  "name": "ZebiHR Work Hours Calculator (Brian)",
   "version": "1.0",
   "description": "Calculates total working hours on ZebiHR.",
   "permissions": [
@@ -13,17 +13,21 @@
     "declarativeNetRequest"
   ],
   "host_permissions": [
-    "https://app.zebihr.com/*", 
+    "https://app.zebihr.com/*",
     "https://api.zebihr.com/*"
   ],
   "action": {
     "default_popup": "index.html",
-    "default_icon": "vite.svg"
+     "default_icon": "logo1.png"
   },
   "content_scripts": [
     {
-      "matches": ["https://app.zebihr.com/*"],
-      "js": ["content.js"]
+      "matches": [
+        "https://app.zebihr.com/*"
+      ],
+      "js": [
+        "content.js"
+      ]
     }
   ],
   "background": {
