@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, Typography, Grid } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { motion } from "framer-motion";
-
+import Tooltip from '@mui/material/Tooltip';
 interface RollingNumberProps {
   value: string;
 }
@@ -60,14 +60,12 @@ function App() {
       fetch(breakTimeUrl, { method: 'GET', headers })
         .then(response => response.json())
         .then(data => {
-          console.log("Break Time API Response:", data);
           if (data[0]?.breakHrs) setBreakHours(data[0].breakHrs);
         }),
 
       fetch(workHoursUrl, { method: 'GET', headers })
         .then(response => response.json())
         .then(data => {
-          console.log("Work Hour API Response:", data);
           if (data?.workHrs) setWorkHours(data.workHrs);
         })
     ])
@@ -183,7 +181,9 @@ function App() {
 
   const WorkHoursDisplay = ({ isLoading, workHours, isEndTime }: { isLoading: boolean; workHours: string; isEndTime: boolean }) => {
     if (isLoading) return <Typography variant="body1">Loading...</Typography>;
-    if (!workHours) return <Typography variant="body1">No hours available</Typography>;
+    if (!workHours || workHours.includes("Invalid") || workHours.includes("NaN")) {
+      return <Typography variant="body1">No hours available</Typography>;
+    }
 
     const [hh, mm, ss] = workHours.split(":");
 
@@ -232,48 +232,57 @@ function App() {
 
       <CardContent>
         <Typography color="info" variant="h5" component="div" gutterBottom sx={{ position: 'relative' }}>
-          <RefreshIcon
-            onClick={() => !isLoading ? fetchWorkHours(apiUrl, authHeader) : console.log("wait")}
-            style={{
-              cursor: 'pointer',
-              position: 'absolute',
-              right: 0,
-              top: 0,
-              transform: 'translateY(-50%)'
-            }}
-          />
+          <Tooltip title="Refresh">
+            <RefreshIcon
+              onClick={() => !isLoading ? fetchWorkHours(apiUrl, authHeader) : console.log("wait")}
+              style={{
+                cursor: 'pointer',
+                position: 'absolute',
+                right: 0,
+                top: 0,
+                transform: 'translateY(-50%)'
+              }}
+            />
+          </Tooltip>
           <span style={{ width: '100%', textAlign: 'center', display: 'block' }}>
             Work Hours Summary
           </span>
         </Typography>
 
         <Grid container spacing={2} sx={{ marginTop: '10px' }}>
-          <Grid item xs={6} sx={{ textAlign: 'center', borderRight: '1px solid #ccc' , borderBottom: '1px solid #ccc' }}>
-            <Typography variant="body1" color="textSecondary">
-              Break Hours
-            </Typography>
-            <WorkHoursDisplay isLoading={isLoading} workHours={breakHours} isEndTime={false} />
-          </Grid>
-          <Grid item xs={6} sx={{ textAlign: 'center' , borderBottom: '1px solid #ccc' }}>
-            <Typography variant="body1" color="textSecondary">
-              Total Work Hours
-            </Typography>
-            <WorkHoursDisplay isLoading={isLoading} workHours={workHours} isEndTime={false} />
-          </Grid>
+          <Tooltip title="🍵 Chill Maarne Ka Time" placement="top">
+            <Grid item xs={6} sx={{ textAlign: 'center', borderRight: '1px solid #ccc', borderBottom: '1px solid #ccc' }}>
+              <Typography variant="body1" color="textSecondary">
+                Break Hours
+              </Typography>
+              <WorkHoursDisplay isLoading={isLoading} workHours={breakHours} isEndTime={false} />
+            </Grid>
+          </Tooltip>
+          <Tooltip title="💪 Mehnat Ka Total Hisaab" placement="top">
+            <Grid item xs={6} sx={{ textAlign: 'center', borderBottom: '1px solid #ccc' }}>
+              <Typography variant="body1" color="textSecondary">
+                Total Work Hours
+              </Typography>
+              <WorkHoursDisplay isLoading={isLoading} workHours={workHours} isEndTime={false} />
+            </Grid>
+          </Tooltip>
 
-          <Grid item xs={6} sx={{ textAlign: 'center' , borderRight: '1px solid #ccc' }}>
-            <Typography variant="body1" color="textSecondary">
-              Net Work Hours
-            </Typography>
-            <WorkHoursDisplay isLoading={isLoading} workHours={subtractTimes(workHours, breakHours)} isEndTime={false} />
-          </Grid>
-          <Grid item xs={6} sx={{ textAlign: 'center' }}>
-            <Typography variant="body1" color="textSecondary">
-              Workday End Time
-            </Typography>
-            <WorkHoursDisplay isLoading={isLoading} workHours={calculateWorkdayEndTime(workHours, breakHours)} isEndTime={true} />
-          </Grid>
-
+          <Tooltip title="📈 Salary Waala Time" placement="bottom">
+            <Grid item xs={6} sx={{ textAlign: 'center', borderRight: '1px solid #ccc' }}>
+              <Typography variant="body1" color="textSecondary">
+                Net Work Hours
+              </Typography>
+              <WorkHoursDisplay isLoading={isLoading} workHours={subtractTimes(workHours, breakHours)} isEndTime={false} />
+            </Grid>
+          </Tooltip>
+          <Tooltip title="🏃 Bhaag DK Bose Time" placement="bottom">
+            <Grid item xs={6} sx={{ textAlign: 'center' }}>
+              <Typography variant="body1" color="textSecondary">
+                Workday End Time
+              </Typography>
+              <WorkHoursDisplay isLoading={isLoading} workHours={calculateWorkdayEndTime(workHours, breakHours)} isEndTime={true} />
+            </Grid>
+          </Tooltip>
           <Grid item xs={12}>
             <Typography sx={{ fontSize: 11 }} color="textSecondary">
               {isLoading ? "Loading" : getFunnyWorkHourComment()}
