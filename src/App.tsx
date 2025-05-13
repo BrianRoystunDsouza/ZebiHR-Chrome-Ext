@@ -39,7 +39,7 @@ function App() {
 
     const empID = empIDMatch[1];
 
-    const baseUrl = `https://api.zebihr.com/customer/238/employee/${empID}`;
+    const baseUrl = `https://synergyapi.helixbeat.com/customer/238/employee/${empID}`;
 
     const headers = {
       'Authorization': header,
@@ -135,44 +135,46 @@ function App() {
 
     const workSeconds = timeToSeconds(workHours);
     const maxSeconds = timeToSeconds(maxWorkHours);
-
+    const funnyComments = [
+      "Whoa! You working overtime or saving the world? 🦸‍♂️",
+      "You deserve a raise… or at least a coffee! ☕",
+      "Are you sure you're not stuck in a time loop? ⏳😂",
+      "Somebody give this person a vacation! 🏖️",
+      "Workaholic mode: ACTIVATED! 🚀",
+      "Does your chair have a glue trap? Time to escape! 😆",
+      "You're making the rest of us look bad! Slow down! 😜",
+      "Enough work for today! Your keyboard needs a break too! ⌨️💨",
+      "Boss Level Unlocked: Ultimate Workaholic! 🏆",
+      "Whoa! You working overtime or saving the world? 🦸‍♂️",
+      "You deserve a raise… or at least a coffee! ☕",
+      "Are you sure you're not stuck in a time loop? ⏳😂",
+      "Somebody give this person a vacation! 🏖️",
+      "Workaholic mode: ACTIVATED! 🚀",
+      "Does your chair have a glue trap? Time to escape! 😆",
+      "You're making the rest of us look bad! Slow down! 😜",
+      "Enough work for today! Your keyboard needs a break too! ⌨️💨",
+      "Boss Level Unlocked: Ultimate Workaholic! 🏆",
+      "Code, sleep, repeat? More like work, work, work! 😅",
+      "At this rate, you’ll own the company soon! 🏢😂",
+      "Hey, even robots take breaks! 🤖💤",
+      "Your keyboard is overheating! 🚨🔥",
+      "Workaholic alert! Someone needs to unplug you! 🛑😂",
+      "Are you farming XP in real life? 🎮🤣",
+      "I see you’re training for the Work Marathon! 🏃‍♂️💨",
+      "Go home! Your desk misses you, but your bed misses you more! 🛏️💤",
+      "If work were a sport, you'd be MVP! 🏅😂",
+      "You’re setting a new office record! 🏆👏",
+      "Your manager just fainted seeing your hours! 😂",
+      "Time to file a missing person report… for your social life! 📢",
+      "Careful! HR might start charging you rent for that chair! 😆",
+      "I hope your company gives loyalty points for this! 💰",
+      "Work-life balance? Never heard of it! 😂",
+      "Someone get this person an **extra** lunch break! 🍔🍟"
+    ];
     if (workSeconds < maxSeconds) {
-      const funnyComments = [
-        "Whoa! You working overtime or saving the world? 🦸‍♂️",
-        "You deserve a raise… or at least a coffee! ☕",
-        "Are you sure you're not stuck in a time loop? ⏳😂",
-        "Somebody give this person a vacation! 🏖️",
-        "Workaholic mode: ACTIVATED! 🚀",
-        "Does your chair have a glue trap? Time to escape! 😆",
-        "You're making the rest of us look bad! Slow down! 😜",
-        "Enough work for today! Your keyboard needs a break too! ⌨️💨",
-        "Boss Level Unlocked: Ultimate Workaholic! 🏆",
-        "Whoa! You working overtime or saving the world? 🦸‍♂️",
-        "You deserve a raise… or at least a coffee! ☕",
-        "Are you sure you're not stuck in a time loop? ⏳😂",
-        "Somebody give this person a vacation! 🏖️",
-        "Workaholic mode: ACTIVATED! 🚀",
-        "Does your chair have a glue trap? Time to escape! 😆",
-        "You're making the rest of us look bad! Slow down! 😜",
-        "Enough work for today! Your keyboard needs a break too! ⌨️💨",
-        "Boss Level Unlocked: Ultimate Workaholic! 🏆",
-        "Code, sleep, repeat? More like work, work, work! 😅",
-        "At this rate, you’ll own the company soon! 🏢😂",
-        "Hey, even robots take breaks! 🤖💤",
-        "Your keyboard is overheating! 🚨🔥",
-        "Workaholic alert! Someone needs to unplug you! 🛑😂",
-        "Are you farming XP in real life? 🎮🤣",
-        "I see you’re training for the Work Marathon! 🏃‍♂️💨",
-        "Go home! Your desk misses you, but your bed misses you more! 🛏️💤",
-        "If work were a sport, you'd be MVP! 🏅😂",
-        "You’re setting a new office record! 🏆👏",
-        "Your manager just fainted seeing your hours! 😂",
-        "Time to file a missing person report… for your social life! 📢",
-        "Careful! HR might start charging you rent for that chair! 😆",
-        "I hope your company gives loyalty points for this! 💰",
-        "Work-life balance? Never heard of it! 😂",
-        "Someone get this person an **extra** lunch break! 🍔🍟"
-      ];
+
+      return funnyComments[Math.floor(Math.random() * funnyComments.length)];
+    }else if (calculateWorkdayEndTime(workHours, breakHours).includes("You can clock out now")) {
       return funnyComments[Math.floor(Math.random() * funnyComments.length)];
     }
 
@@ -205,20 +207,29 @@ function App() {
 
 
   const calculateWorkdayEndTime = (workHours: string, breakHours: string): string => {
-    const targetWorkSeconds = 8 * 3600 + 30 * 60; // 8:30:00 in seconds
+    const targetWorkSeconds = 8 * 3600 + 35 * 60; // 8:35:00 in seconds
+    
     const timeToSeconds = (time: string): number => {
       const [hh, mm, ss] = time.split(":").map(Number);
       return hh * 3600 + mm * 60 + ss;
     };
-
+  
     const currentNetSeconds = timeToSeconds(subtractTimes(workHours, breakHours));
     const remainingSeconds = targetWorkSeconds - currentNetSeconds;
-
-    if (remainingSeconds <= 0) {
-      return "You can clock out now!";
-    }
-
+  
+    // Calculate when the user reached their target hours
     const now = new Date();
+    
+    if (remainingSeconds <= 0) {
+      const clockOutTime = new Date(now.getTime() - Math.abs(remainingSeconds) * 1000);
+      const formattedClockOutTime = clockOutTime.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+      return `You can clock out now! (Since ${formattedClockOutTime})`;
+    }
+  
     const endTime = new Date(now.getTime() + remainingSeconds * 1000);
     return endTime.toLocaleTimeString('en-US', {
       hour: '2-digit',
@@ -226,6 +237,7 @@ function App() {
       hour12: true
     });
   };
+  
 
   return (
     <Card sx={{ margin: '20px auto', backgroundColor: '#f4f6f8', boxShadow: 'none', width: '500px', maxWidth: '400px' }}>

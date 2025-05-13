@@ -9,25 +9,21 @@
     "scripting",
     "cookies",
     "tabs",
-    "webRequest",
-    "declarativeNetRequest"
+    "webRequest"
   ],
   "host_permissions": [
-    "https://app.zebihr.com/*",
-    "https://api.zebihr.com/*"
+    "https://synergyapi.helixbeat.com/*",
+    "https://*.helixbeat.com/*"
   ],
   "action": {
     "default_popup": "index.html",
-     "default_icon": "logo1.png"
+    "default_icon": "logo1.png"
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://app.zebihr.com/*"
-      ],
-      "js": [
-        "content.js"
-      ]
+      "matches": ["https://*.helixbeat.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
     }
   ],
   "background": {

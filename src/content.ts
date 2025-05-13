@@ -3,7 +3,6 @@
   const originalFetch = window.fetch;
   window.fetch = async (...args) => {
     const [url, options] = args;
-console.log("wwewewewewE",{args, url, options});
 
     const response = await originalFetch(...args);
 
@@ -32,7 +31,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     entries.forEach((entry) => {
       if (entry.entryType === 'resource') {
         const resourceEntry = entry as PerformanceResourceTiming;
-console.log("Resource entry:", resourceEntry);
 
         const contentScriptData = {
           type: "API_REQUEST_COMPLETED",
