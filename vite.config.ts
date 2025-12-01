@@ -8,15 +8,19 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       input: {
-        popup: resolve(__dirname, 'index.html'),
+        background: resolve(__dirname, 'src/background.ts'),
         content: resolve(__dirname, 'src/content.ts'),
-        background: resolve(__dirname, 'src/background.ts')
+        popup: resolve(__dirname, 'index.html'),
       },
       output: {
         entryFileNames: '[name].js',
         chunkFileNames: '[name].js',
-        assetFileNames: '[name].[ext]'
+        assetFileNames: '[name].[ext]',
+        format: 'es',
+        inlineDynamicImports: false,
       }
-    }
+    },
+    minify: false,
+    sourcemap: true
   }
 });
