@@ -1,292 +1,168 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Card, CardContent } from '@mui/material';
-import { motion, AnimatePresence } from 'framer-motion';
-import WeekendIcon from '@mui/icons-material/Weekend';
-import CelebrationIcon from '@mui/icons-material/Celebration';
-import WavingHandIcon from '@mui/icons-material/WavingHand';
+import { useEffect, useMemo, useState } from "react";
+import { Box, Card, CardContent, Typography } from "@mui/material";
+import { AnimatePresence, motion } from "framer-motion";
+import WbSunnyRoundedIcon from "@mui/icons-material/WbSunnyRounded";
+import CelebrationRoundedIcon from "@mui/icons-material/CelebrationRounded";
+import RocketLaunchRoundedIcon from "@mui/icons-material/RocketLaunchRounded";
+import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
+import "./SplashScreen.css";
 
 interface SplashScreenProps {
   onComplete: () => void;
   employeeName?: string;
 }
 
-const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete, employeeName = "" }) => {
+const getFirstName = (fullName: string) => {
+  if (!fullName) {
+    return "";
+  }
+
+  return fullName.trim().split(" ")[0];
+};
+
+const getGreeting = () => {
+  const hour = new Date().getHours();
+
+  if (hour >= 5 && hour < 12) {
+    return "Good Morning";
+  }
+
+  if (hour >= 12 && hour < 17) {
+    return "Good Afternoon";
+  }
+
+  if (hour >= 17 && hour < 21) {
+    return "Good Evening";
+  }
+
+  return "Good Night";
+};
+
+const SplashScreen = ({ onComplete, employeeName = "" }: SplashScreenProps) => {
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
-  const getFirstName = (fullName: string): string => {
-    if (!fullName) return "";
-    return fullName.split(' ')[0];
-  };
-
-  const getTimeBasedGreeting = (): string => {
-    const hour = new Date().getHours();
-
-    if (hour >= 5 && hour < 12) {
-      return "Good Morning";
-    } else if (hour >= 12 && hour < 17) {
-      return "Good Afternoon";
-    } else if (hour >= 17 && hour < 21) {
-      return "Good Evening";
-    } else {
-      return "Good Night";
-    }
-  };
-
-  const getDaySpecificContent = () => {
-    const today = new Date().getDay();
+  const content = useMemo(() => {
+    const day = new Date().getDay();
     const firstName = getFirstName(employeeName);
-    const greeting = firstName ? `, ${firstName}` : "";
-    const timeGreeting = getTimeBasedGreeting();
-    switch (today) {
-      case 1: // Monday
-        return {
-          icon: <WeekendIcon sx={{ fontSize: '2rem', color: '#4caf50' }} />,
-          title: `${timeGreeting}${greeting}! 🌟`,
-          subtitle: "Hope you had a wonderful weekend!",
-          messages: [
-            "Ready to conquer this Monday? 💪",
-            "Fresh week, fresh opportunities! ⚡",
-            "Let's make this week amazing! 🎯"
-          ],
-          gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-        };
+    const suffix = firstName ? `, ${firstName}` : "";
 
-      case 5: // Friday
-        return {
-          icon: <CelebrationIcon sx={{ fontSize: '2rem', color: '#ff9800' }} />,
-          title: `Happy Friday${greeting}! 🎉`,
-          subtitle: "You've earned this weekend!",
-          messages: [
-            "TGIF! Time to celebrate! 🥳",
-            "Weekend vibes loading... 🏖️",
-            "You crushed this week! ✨"
-          ],
-          gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
-        };
-
-      default:
-        return {
-          icon: <WavingHandIcon sx={{ fontSize: '2rem', color: '#2196f3' }} />,
-          title: `Welcome back${greeting}! 👋`,
-          subtitle: "Ready to track your productivity?",
-          messages: [
-            "Let's make today count! 🚀",
-            "Your goals are waiting! ⏰",
-            "Time to shine bright! ⭐"
-          ],
-          gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-        };
+    if (day === 1) {
+      return {
+        icon: <RocketLaunchRoundedIcon sx={{ fontSize: 28 }} />,
+        title: `${getGreeting()}${suffix}`,
+        subtitle: "Fresh week. Fresh runway.",
+        messages: [
+          "Monday can still look sharp.",
+          "Let us turn momentum back on.",
+          "The dashboard is lining everything up.",
+        ],
+      };
     }
-  };
 
-  const content = getDaySpecificContent();
+    if (day === 5) {
+      return {
+        icon: <CelebrationRoundedIcon sx={{ fontSize: 28 }} />,
+        title: `Happy Friday${suffix}`,
+        subtitle: "Finish the week with style.",
+        messages: [
+          "You made it to the final stretch.",
+          "Keep the pace clean and light.",
+          "Weekend energy is almost unlocked.",
+        ],
+      };
+    }
+
+    return {
+      icon: <WbSunnyRoundedIcon sx={{ fontSize: 28 }} />,
+      title: `${getGreeting()}${suffix}`,
+      subtitle: "Your workday pulse is loading.",
+      messages: [
+        "Syncing today's rhythm.",
+        "Pulling your latest hours.",
+        "Getting your workspace ready.",
+      ],
+    };
+  }, [employeeName]);
 
   useEffect(() => {
-    const messageInterval = setInterval(() => {
+    const messageInterval = window.setInterval(() => {
       setCurrentMessageIndex((prev) => (prev + 1) % content.messages.length);
-    }, 500);
+    }, 650);
 
-    const splashTimeout = setTimeout(() => {
+    const splashTimeout = window.setTimeout(() => {
       onComplete();
-    }, 550);
+    }, 1250);
 
     return () => {
-      clearInterval(messageInterval);
-      clearTimeout(splashTimeout);
+      window.clearInterval(messageInterval);
+      window.clearTimeout(splashTimeout);
     };
   }, [content.messages.length, onComplete]);
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.8 }}
-      transition={{ duration: 0.25 }}
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="splash-shell"
     >
-      <Card
-        sx={{
-          backgroundColor: '#f8f9fa',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-          width: '500px',
-          maxWidth: '400px',
-          borderRadius: '12px',
-          overflow: 'hidden',
-          transition: 'all 0.3s ease',
-          background: content.gradient,
-          position: 'relative'
-        }}
-      >
-        <CardContent sx={{ padding: '16px 20px', position: 'relative', zIndex: 2 }}>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              zIndex: 1
-            }}
-          />
+      <motion.div
+        className="splash-orb splash-orb-left"
+        animate={{ y: [-8, 10, -8], x: [0, 8, 0] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="splash-orb splash-orb-right"
+        animate={{ y: [10, -12, 10], x: [0, -8, 0] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+      />
 
-          <Box sx={{ position: 'relative', zIndex: 2, textAlign: 'center', color: 'white' }}>
-            {/* Animated Icon */}
-            <motion.div
-              animate={{
-                rotate: [0, 5, -5, 0],
-                scale: [1, 1.05, 1]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                repeatType: "reverse"
-              }}
-              style={{ marginBottom: '12px', marginTop: '8px' }}
-            >
-              {content.icon}
-            </motion.div>
+      <Card className="splash-card">
+        <CardContent className="splash-content">
+          <div className="splash-badge">
+            <AutoAwesomeRoundedIcon sx={{ fontSize: 16 }} />
+            <span>ZebiHR Flow</span>
+          </div>
 
-            {/* Personalized Title */}
-            <motion.div
-              initial={{ y: 10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.4 }}
-            >
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 600,
-                  marginBottom: '8px',
-                  textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                  fontSize: '1.1rem'
-                }}
-              >
-                {content.title}
-              </Typography>
-            </motion.div>
+          <motion.div
+            className="splash-icon"
+            animate={{ rotateY: [0, 10, -10, 0], y: [0, -4, 0] }}
+            transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+          >
+            {content.icon}
+          </motion.div>
 
-            {/* Show full name if available */}
-            {employeeName && (
+          <Typography className="splash-title">{content.title}</Typography>
+          <Typography className="splash-subtitle">{content.subtitle}</Typography>
+
+          {employeeName && <Typography className="splash-name">{employeeName}</Typography>}
+
+          <Box className="splash-message-row">
+            <AnimatePresence mode="wait">
               <motion.div
-                initial={{ y: 10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.4 }}
+                key={currentMessageIndex}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.28 }}
               >
-                <Typography
-                  variant="caption"
-                  sx={{
-                    opacity: 0.8,
-                    fontSize: '0.75rem',
-                    fontStyle: 'italic',
-                    display: 'block',
-                    marginBottom: '8px',
-                    textShadow: '0 1px 2px rgba(0,0,0,0.3)'
-                  }}
-                >
-                  {employeeName}
+                <Typography className="splash-message">
+                  {content.messages[currentMessageIndex]}
                 </Typography>
               </motion.div>
-            )}
-
-            {/* Subtitle */}
-            <motion.div
-              initial={{ y: 10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.4 }}
-            >
-              <Typography
-                variant="body2"
-                sx={{
-                  marginBottom: '16px',
-                  opacity: 0.9,
-                  textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-                  fontSize: '0.9rem'
-                }}
-              >
-                {content.subtitle}
-              </Typography>
-            </motion.div>
-
-            {/* Rotating Messages */}
-            <Box sx={{ height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentMessageIndex}
-                  initial={{ y: 10, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -10, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      fontStyle: 'italic',
-                      opacity: 0.8,
-                      textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-                      fontSize: '0.8rem'
-                    }}
-                  >
-                    {content.messages[currentMessageIndex]}
-                  </Typography>
-                </motion.div>
-              </AnimatePresence>
-            </Box>
-
-            {/* Progress Bar */}
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: '100%' }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-              style={{
-                height: '2px',
-                background: 'rgba(255, 255, 255, 0.3)',
-                borderRadius: '1px',
-                overflow: 'hidden',
-                marginTop: '8px'
-              }}
-            >
-              <motion.div
-                style={{
-                  height: '100%',
-                  background: 'rgba(255, 255, 255, 0.8)',
-                  borderRadius: '1px'
-                }}
-              />
-            </motion.div>
+            </AnimatePresence>
           </Box>
-        </CardContent>
 
-        {/* Floating particles */}
-        {[...Array(3)].map((_, i) => (
-          <motion.div
-            key={i}
-            initial={{
-              x: Math.random() * 300,
-              y: 200,
-              opacity: 0
-            }}
-            animate={{
-              y: -20,
-              opacity: [0, 0.6, 0],
-              x: Math.random() * 300
-            }}
-            transition={{
-              duration: 2.5,
-              repeat: Infinity,
-              delay: Math.random() * 1
-            }}
-            style={{
-              position: 'absolute',
-              width: '2px',
-              height: '2px',
-              background: 'rgba(255, 255, 255, 0.6)',
-              borderRadius: '50%',
-              pointerEvents: 'none',
-              zIndex: 1
-            }}
-          />
-        ))}
+          <div className="splash-progress">
+            <motion.div
+              className="splash-progress__bar"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 1.05, ease: "easeInOut" }}
+            />
+          </div>
+        </CardContent>
       </Card>
     </motion.div>
   );
